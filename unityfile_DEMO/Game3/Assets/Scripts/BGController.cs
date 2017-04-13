@@ -67,7 +67,7 @@ public class BGController : MonoBehaviour {
         this.transform.position = new Vector2(xVal, yVal);
         startSprite = GameObject.Instantiate(startSpritePREFAB, this.transform);
         GroundCollider = startSprite.GetComponent<BoxCollider2D>();
-        groundHorizontalLength = GroundCollider.size.x;
+        groundHorizontalLength = GroundCollider.size.x * 2f;
         this.transform.position = new Vector2(groundHorizontalLength, yVal);
         startCopy = GameObject.Instantiate(startSpritePREFAB, this.transform);
 
