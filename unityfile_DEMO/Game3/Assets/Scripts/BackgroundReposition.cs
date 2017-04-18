@@ -4,7 +4,7 @@ using UnityEngine;
 
 //this is same as RepeatingGround.cs
 
-public class TEMPbackgroundController : MonoBehaviour
+public class BackgroundReposition : MonoBehaviour
 {
 
     private BoxCollider2D GroundCollider;
@@ -28,7 +28,7 @@ public class TEMPbackgroundController : MonoBehaviour
 
     private void RepositionGround()
     {
-        Vector2 groundOffset = new Vector2(groundHorizontalLength*2f, 0);
+        Vector2 groundOffset = new Vector2(groundHorizontalLength * 2f, 0);
         transform.position = (Vector2)transform.position + groundOffset;
     }
 }
