@@ -50,58 +50,62 @@ public class PlayerControler : MonoBehaviour {
             JumpUP(upForce);
             //anim.SetBool("Grounded", Grounded);
         }
-        else if (Input.GetKey("up") && ground)
+        else if ((Input.GetKey("up")||Input.GetKey("w")) && ground)
         {
-            if (gController == 1)//Player is in GroundMID, Going GroundBACK
+            if (gController > 0)
             {
-                gController -= 1;
-                JumpUP(upForce/1.2f);
-                StartCoroutine("Wait");//THIS DOES NTO WORK. NEED HELP FINDING DELAY FUNCTION!!!!
-                groundM1.enabled = false;
-                groundM2.enabled = false;
-                groundB1.enabled = true;
-                groundB2.enabled = true;
-            }
-            else if (gController == 2)//Player is in GroundFORE, Going GroundMID
-            {
-                gController -= 1;
-                JumpUP(upForce/1.2f);
-                StartCoroutine("Wait");
-                groundF1.enabled = false;
-                groundF2.enabled = false;
-                groundM1.enabled = true;
-                groundM2.enabled = true;
+                JumpUP(upForce / 1.3f);
+                Invoke("LevelUP", 0.5f);
             }
         }
-        else if (Input.GetKey("down") && ground)
+        else if ((Input.GetKey("down") || Input.GetKey("s")) && ground)
         {
-            if (gController == 0)//Player is in GroundBACK, Going GroundMID
+            if (gController < 2)
             {
-                gController += 1;
                 JumpDOWN(upForce / 3f);
-                StartCoroutine("Wait");
-                groundB1.enabled = false;
-                groundB2.enabled = false;
-                groundM1.enabled = true;
-                groundM2.enabled = true;
-            }
-            else if (gController == 1)//Player is in GroundMID, Going GroundFORE
-            {
-                gController += 1;
-                JumpDOWN(upForce / 3f);
-                StartCoroutine("Wait");
-                groundM1.enabled = false;
-                groundM2.enabled = false;
-                groundF1.enabled = true;
-                groundF2.enabled = true;
+                Invoke("LevelDOWN", 0.1f);
             }
         }
     }
 
-    //Delays by number of seconds(FLOAT)
-    IEnumerator Wait()
+    void LevelUP()
     {
-        yield return new WaitForSeconds(2);
+        if (gController == 1)//Player is in GroundMID, Going GroundBACK
+        {
+            gController -= 1;
+            groundM1.enabled = false;
+            groundM2.enabled = false;
+            groundB1.enabled = true;
+            groundB2.enabled = true;
+        }
+        else if (gController == 2)//Player is in GroundFORE, Going GroundMID
+        {
+            gController -= 1;
+            groundF1.enabled = false;
+            groundF2.enabled = false;
+            groundM1.enabled = true;
+            groundM2.enabled = true;
+        }
+    }
+
+    void LevelDOWN()
+    {
+        if (gController == 0)//Player is in GroundBACK, Going GroundMID
+        {
+            gController += 1;
+            groundB1.enabled = false;
+            groundB2.enabled = false;
+            groundM1.enabled = true;
+            groundM2.enabled = true;
+        }
+        else if (gController == 1)//Player is in GroundMID, Going GroundFORE
+        {
+            gController += 1;
+            groundM1.enabled = false;
+            groundM2.enabled = false;
+            groundF1.enabled = true;
+            groundF2.enabled = true;
+        }
     }
 
     //Jumps Up by given force
