@@ -1,8 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+<<<<<<< HEAD
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
+=======
+# Visual Studio 2015
+>>>>>>> refs/remotes/origin/master
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game3", "Game3.csproj", "{7029624B-D61A-6EDE-0B9F-A262A610F931}"
 EndProject
 Global
