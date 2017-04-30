@@ -6,11 +6,14 @@ using UnityEngine.SceneManagement;
 public class PlayerControler : MonoBehaviour {
 
     public float upForce = 400f;
+    public float ScreenStart = 10f;
     private bool ground = true;
     public bool Grounded;
     private int djump = 0;
     private Animator anim;
     private Rigidbody2D rb2d;
+
+    public int attacking = 0;
 
     //Ground coliders Controller Calls
     public int gController = 1;//Currently set for Player starts in GroundMID. Change if needed.
@@ -50,6 +53,13 @@ public class PlayerControler : MonoBehaviour {
             JumpUP(upForce);
             //anim.SetBool("Grounded", Grounded);
         }
+        else if ((Input.GetKey("space")) && ground)
+        {
+            //animation for attacking goes here
+            attacking = 1;
+            Invoke("Dum", 0.4f);
+            attacking = 0;
+        }
         else if ((Input.GetKey("up")||Input.GetKey("w")) && ground)
         {
             if (gController > 0)
@@ -66,6 +76,11 @@ public class PlayerControler : MonoBehaviour {
                 Invoke("LevelDOWN", 0.1f);
             }
         }
+    }
+
+    void Dum()
+    {
+        //nothing. this is for delaying
     }
 
     void LevelUP()
@@ -135,9 +150,25 @@ public class PlayerControler : MonoBehaviour {
             //anim.SetBool("Grounded", Grounded);
             djump = 0;
         }
-        if (coll.gameObject.CompareTag("GameController"))
+        if (coll.gameObject.CompareTag("GameController")) //collided with obj
+        {
+            //health is ticked off, (slow??), 
+            coll.gameObject.GetComponent<Collider2D>().enabled = false;
+        }
+        if ((coll.gameObject.CompareTag("E1") || coll.gameObject.CompareTag("E2")) && attacking == 0) //collided with enemy, not attacking
+        {
+            coll.gameObject.GetComponent<Collider2D>().enabled = false;
+            //health lost
+        }
+        if ((coll.gameObject.CompareTag("E1") || coll.gameObject.CompareTag("E2")) && attacking == 1) //collided with enemy, attacking
+        {
+            Vector2 Offset = new Vector2(ScreenStart, 0);
+            coll.gameObject.GetComponent<Transform>().position = (Vector2)transform.position + Offset;
+            //gain health?
+        }
+        /*if (coll.gameObject.CompareTag("GameController"))
         {
             this.gameObject.SetActive(false);
-        }
+        }*/
     }
 }
