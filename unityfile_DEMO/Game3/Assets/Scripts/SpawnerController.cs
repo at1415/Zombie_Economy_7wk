@@ -26,6 +26,8 @@ public class SpawnerController : MonoBehaviour
     private GameObject obj1B;
     private GameObject obj1M;
     private GameObject obj1F;
+    private int playerAtL = 0;
+    private int playerWas = -1;
     //private GameObject Player ???
 
     public int numEmemy1Spawns = 4;
@@ -33,6 +35,8 @@ public class SpawnerController : MonoBehaviour
     public int numEnemyBossSpawns = 3;
     //public int BossSpawnsSoFar = 0;
     public int numobjSpawns = 5;
+    public float delayTime = 5f;
+    private float timer = 0f;
     public Text scoreText;
     public int score = 0;
     public int NeededScore = 0;
@@ -70,9 +74,9 @@ public class SpawnerController : MonoBehaviour
     private int EBossFOREOnScreen = 0;
     private int OnScreen = 0;
     private int floorSpawn;
-    public int mobspawns;
-    public int totalspawns;
-    public int dumspawns;
+    private int mobspawns;
+    private int totalspawns;
+    private int dumspawns;
     //private int Obj1OnScreen = 0;
 
     //Postions of Levels, where to spawn and despawn x-wise
@@ -89,7 +93,11 @@ public class SpawnerController : MonoBehaviour
     void Start()
     {
         //Formula making min score needed. Adjust as needed
+        timer = delayTime;
         NeededScore = numEmemy1Spawns * Score4Enemy1 + numEnemy2Spawns * Score4Enemy2 + numEnemyBossSpawns * Score4EnemyBoss;
+        PlayerOBJECT.GetComponent<PlayerControler>().NeededScore = NeededScore;
+        playerAtL = PlayerOBJECT.GetComponent<PlayerControler>().GController;
+        //playerWas = PlayerOBJECT.GetComponent<PlayerControler>().GController;
         mobspawns = numEmemy1Spawns + numEnemy2Spawns + numobjSpawns;
         this.transform.position = new Vector2(ScreenRight, GBack_y);
         EnemyBoss = GameObject.Instantiate(EnemyBossPREFAB, this.transform);
@@ -117,17 +125,17 @@ public class SpawnerController : MonoBehaviour
         totalspawns = numEmemy1Spawns + numEnemy2Spawns + numEnemyBossSpawns + numobjSpawns;
         dumspawns = numEmemy1Spawns + numEnemy2Spawns + numobjSpawns;
         //check if 1/3 of dumspawns are gone. if they are spawn boss
-        if ((mobspawns / 3) >= dumspawns)
+        if ((mobspawns / 2) >= dumspawns && EBossBACKOnScreen==0 && EBossMIDOnScreen==0 && EBossFOREOnScreen==0 && numEnemyBossSpawns>=0)
         {
-            SpawnBoss(FloorController());
-        }
-        else if (((mobspawns / 3) * 2) >= dumspawns)
-        {
-            SpawnBoss(FloorController());
-        }
-        else if (dumspawns <= 0)
-        {
-            SpawnBoss(FloorController());
+            int ran = Random.Range(1, 101);
+            if (dumspawns == 0)
+            {
+                SpawnBoss(FloorController());
+            }
+            else if (ran <= 10)
+            {
+                SpawnBoss(FloorController());
+            }
         }
         //check if spawns are spent. if they are, check if score > Needed score. go to either win or lose scene
         if (totalspawns == 0)
@@ -141,7 +149,17 @@ public class SpawnerController : MonoBehaviour
                 // go to lose scene
             }
         }
-        //ColliderDespawn();
+        playerAtL = PlayerOBJECT.GetComponent<PlayerControler>().GController;
+        if (playerWas == -1)
+        {
+            playerWas = PlayerOBJECT.GetComponent<PlayerControler>().GController;
+            ColliderDespawn();
+        }
+        else if (playerAtL != playerWas)
+        {
+            playerWas = playerAtL;
+            ColliderDespawn();
+        }
         timeSinceEnemy1BLastSpawned += Time.deltaTime;
         timeSinceEnemy1MLastSpawned += Time.deltaTime;
         timeSinceEnemy1FLastSpawned += Time.deltaTime;
@@ -151,50 +169,51 @@ public class SpawnerController : MonoBehaviour
         timeSinceObjBEnemyLastSpawned += Time.deltaTime;
         timeSinceObjMEnemyLastSpawned += Time.deltaTime;
         timeSinceObjFEnemyLastSpawned += Time.deltaTime;
+        timeSinceEBossLastSpawned += Time.deltaTime;
         if (EnemyBACKOnScreen == 0 && EnemyMIDOnScreen == 0 && EnemyFOREOnScreen == 0)
         {
             floorSpawn = Random.Range(0, 3);
-            StartCoroutine(SpawnGroundEnemy(floorSpawn, 1f));
+            StartCoroutine(SpawnGroundEnemy(floorSpawn, 2f));
         }
         else if (OnScreen >= 1)
         {
-            int f = FloorController();
-            if (f == 0)
-            {
-                int r = Random.Range(1, 3);
-                if (r == 1)
+                int f = FloorController();
+                if (f == 0)
                 {
-                    StartCoroutine(SpawnGroundEnemy(1, 10f));
+                    int r = Random.Range(1, 3);
+                    if (r == 1)
+                    {
+                        StartCoroutine(SpawnGroundEnemy(1, 2f));
+                    }
+                    else
+                    {
+                        StartCoroutine(SpawnGroundEnemy(2, 2f));
+                    }
                 }
-                else
+                else if (f == 1)
                 {
-                    StartCoroutine(SpawnGroundEnemy(2, 10f));
+                    int r = Random.Range(1, 3);
+                    if (r == 1)
+                    {
+                        StartCoroutine(SpawnGroundEnemy(0, 2f));
+                    }
+                    else
+                    {
+                        StartCoroutine(SpawnGroundEnemy(2, 2f));
+                    }
                 }
-            }
-            else if (f == 1)
-            {
-                int r = Random.Range(1, 3);
-                if (r == 1)
+                else if (f == 2)
                 {
-                    StartCoroutine(SpawnGroundEnemy(0, 10f));
+                    int r = Random.Range(1, 3);
+                    if (r == 1)
+                    {
+                        StartCoroutine(SpawnGroundEnemy(0, 2f));
+                    }
+                    else
+                    {
+                        StartCoroutine(SpawnGroundEnemy(1, 2f));
+                    }
                 }
-                else
-                {
-                    StartCoroutine(SpawnGroundEnemy(2, 10f));
-                }
-            }
-            else if(f == 2)
-            {
-                int r = Random.Range(1, 3);
-                if (r == 1)
-                {
-                    StartCoroutine(SpawnGroundEnemy(0, 10f));
-                }
-                else
-                {
-                    StartCoroutine(SpawnGroundEnemy(1, 10f));
-                }
-            }
         }
         /*if (birdEnemyOnScreen == 0)
         {
@@ -325,18 +344,6 @@ public class SpawnerController : MonoBehaviour
                     numobjSpawns -= 1;
                 }
             }
-            /*bird.transform.position = new Vector2(maxX - (timeSinceBirdEnemyLastSpawned * 3 * speed), birdYPosition);
-            if (maxX - (timeSinceBirdEnemyLastSpawned * 3 * speed) <= minX)
-            {
-                birdEnemyOnScreen = 0;
-                if (speed < 5)
-                {
-                    speed += 0.1f;
-                }
-                score += 1;
-                /*scoreText.text = "Score: " + score.ToString();
-                PlayerPrefs.SetString("Score", scoreText.text);
-            }*/
         }
         if (EBossBACKOnScreen == 1)
         {
@@ -428,7 +435,8 @@ public class SpawnerController : MonoBehaviour
 
     void ColliderDespawn() //despawns colliders if player is not on floor level 
     {
-        if (PlayerOBJECT.GetComponent<PlayerControler>().gController == 0)
+        playerAtL = PlayerOBJECT.GetComponent<PlayerControler>().GController;
+        if (playerAtL == 0)
         {
             if (EBossBACKOnScreen == 1)
             {
@@ -448,7 +456,7 @@ public class SpawnerController : MonoBehaviour
             Enemy2F.GetComponent<Collider2D>().enabled = false;
             obj1F.GetComponent<Collider2D>().enabled = false;
         }
-        else if (PlayerOBJECT.GetComponent<PlayerControler>().gController == 1)
+        else if (playerAtL == 1)
         {
             if (EBossMIDOnScreen == 1)
             {
@@ -493,137 +501,114 @@ public class SpawnerController : MonoBehaviour
     IEnumerator SpawnGroundEnemy(int floor, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (floor == 0 && EnemyBACKOnScreen<2)
+        if (Time.time >= delayTime)
         {
-            int rand = Random.Range(0, 3);
-            if ( rand == 0 && Enemy1BACKOnScreen==0 && numEmemy1Spawns>0)
+            delayTime += 1;//delayTime *= 2;
+            if (delayTime > timer * 4)
             {
-                Enemy1B.transform.position = new Vector2(ScreenRight, GBack_y);
-                Enemy1B.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy1BACKOnScreen = 1;
-                EnemyBACKOnScreen += 1;
-                timeSinceEnemy1BLastSpawned = 0f;
-                OnScreen += 1;
+                delayTime = timer;
             }
-            else if(rand == 1 && Enemy2BACKOnScreen==0 && numEnemy2Spawns>0)
+            if (floor == 0 && EnemyBACKOnScreen < 2)
             {
-                Enemy2B.transform.position = new Vector2(ScreenRight, GBack_y);
-                Enemy2B.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy2BACKOnScreen = 1;
-                EnemyBACKOnScreen += 1;
-                timeSinceEnemy2BLastSpawned = 0f;
-                OnScreen += 1;
+                int rand = Random.Range(0, 3);
+                if (rand == 0 && Enemy1BACKOnScreen == 0 && numEmemy1Spawns > 0)
+                {
+                    Enemy1B.transform.position = new Vector2(ScreenRight, GBack_y);
+                    Enemy1B.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy1BACKOnScreen = 1;
+                    EnemyBACKOnScreen += 1;
+                    timeSinceEnemy1BLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 1 && Enemy2BACKOnScreen == 0 && numEnemy2Spawns > 0)
+                {
+                    Enemy2B.transform.position = new Vector2(ScreenRight, GBack_y);
+                    Enemy2B.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy2BACKOnScreen = 1;
+                    EnemyBACKOnScreen += 1;
+                    timeSinceEnemy2BLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 2 && objBACKOnScreen == 0 && numobjSpawns > 0)
+                {
+                    obj1B.transform.position = new Vector2(ScreenRight, GBack_y);
+                    obj1B.gameObject.GetComponent<Collider2D>().enabled = true;
+                    objBACKOnScreen = 1;
+                    EnemyBACKOnScreen += 1;
+                    timeSinceObjBEnemyLastSpawned = 0f;
+                    OnScreen += 1;
+                }
             }
-            else if(rand==2 && objBACKOnScreen==0 && numobjSpawns>0)
+            else if (floor == 1 && EnemyMIDOnScreen < 2)
             {
-                obj1B.transform.position = new Vector2(ScreenRight, GBack_y);
-                obj1B.gameObject.GetComponent<Collider2D>().enabled = true;
-                objBACKOnScreen = 1;
-                EnemyBACKOnScreen += 1;
-                timeSinceObjBEnemyLastSpawned = 0f;
-                OnScreen += 1;
+                int rand = Random.Range(0, 3);
+                if (rand == 0 && Enemy1MIDOnScreen == 0 && numEmemy1Spawns > 0)
+                {
+                    Enemy1M.transform.position = new Vector2(ScreenRight, GMid_y);
+                    Enemy1M.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy1MIDOnScreen = 1;
+                    EnemyMIDOnScreen += 1;
+                    timeSinceEnemy1MLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 1 && Enemy2MIDOnScreen == 0 && numEnemy2Spawns > 0)
+                {
+                    Enemy2M.transform.position = new Vector2(ScreenRight, GMid_y);
+                    Enemy2M.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy2MIDOnScreen = 1;
+                    EnemyMIDOnScreen += 1;
+                    timeSinceEnemy2MLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 2 && objMIDOnScreen == 0 && numobjSpawns > 0)
+                {
+                    obj1M.transform.position = new Vector2(ScreenRight, GMid_y);
+                    obj1M.gameObject.GetComponent<Collider2D>().enabled = true;
+                    objMIDOnScreen = 1;
+                    EnemyMIDOnScreen += 1;
+                    timeSinceObjMEnemyLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+            }
+            else if (floor == 2 && EnemyFOREOnScreen < 2)
+            {
+                int rand = Random.Range(0, 3);
+                if (rand == 0 && Enemy1FOREOnScreen == 0 && numEmemy1Spawns > 0)
+                {
+                    Enemy1F.transform.position = new Vector2(ScreenRight, GFore_y);
+                    Enemy1F.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy1FOREOnScreen = 1;
+                    EnemyFOREOnScreen += 1;
+                    timeSinceEnemy1FLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 1 && Enemy2FOREOnScreen == 0 && numEnemy2Spawns > 0)
+                {
+                    Enemy2F.transform.position = new Vector2(ScreenRight, GFore_y);
+                    Enemy2F.gameObject.GetComponent<Collider2D>().enabled = true;
+                    Enemy2FOREOnScreen = 1;
+                    EnemyFOREOnScreen += 1;
+                    timeSinceEnemy2FLastSpawned = 0f;
+                    OnScreen += 1;
+                }
+                else if (rand == 2 && objFOREOnScreen == 0 && numobjSpawns > 0)
+                {
+                    obj1F.transform.position = new Vector2(ScreenRight, GFore_y);
+                    obj1F.gameObject.GetComponent<Collider2D>().enabled = true;
+                    objFOREOnScreen = 1;
+                    EnemyFOREOnScreen += 1;
+                    timeSinceObjFEnemyLastSpawned = 0f;
+                    OnScreen += 1;
+                }
             }
         }
-        else if(floor == 1 && EnemyMIDOnScreen<2)
-        {
-            int rand = Random.Range(0, 3);
-            if (rand == 0 && Enemy1MIDOnScreen==0 && numEmemy1Spawns>0)
-            {
-                Enemy1M.transform.position = new Vector2(ScreenRight, GMid_y);
-                Enemy1M.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy1MIDOnScreen = 1;
-                EnemyMIDOnScreen += 1;
-                timeSinceEnemy1MLastSpawned = 0f;
-                OnScreen += 1;
-            }
-            else if (rand == 1 && Enemy2MIDOnScreen==0 && numEnemy2Spawns>0)
-            {
-                Enemy2M.transform.position = new Vector2(ScreenRight, GMid_y);
-                Enemy2M.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy2MIDOnScreen = 1;
-                EnemyMIDOnScreen += 1;
-                timeSinceEnemy2MLastSpawned = 0f;
-                OnScreen += 1;
-            }
-            else if(rand==2 && objMIDOnScreen==0 && numobjSpawns>0)
-            {
-                obj1M.transform.position = new Vector2(ScreenRight, GMid_y);
-                obj1M.gameObject.GetComponent<Collider2D>().enabled = true;
-                objMIDOnScreen = 1;
-                EnemyMIDOnScreen += 1;
-                timeSinceObjMEnemyLastSpawned = 0f;
-                OnScreen += 1;
-            }
-        }
-        else if (floor == 2 && EnemyFOREOnScreen<2)
-        {
-            int rand = Random.Range(0, 3);
-            if (rand == 0 && Enemy1FOREOnScreen==0 && numEmemy1Spawns>0)
-            {
-                Enemy1F.transform.position = new Vector2(ScreenRight, GFore_y);
-                Enemy1F.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy1FOREOnScreen = 1;
-                EnemyFOREOnScreen += 1;
-                timeSinceEnemy1FLastSpawned = 0f;
-                OnScreen += 1;
-            }
-            else if (rand == 1 && Enemy2FOREOnScreen==0 && numEnemy2Spawns>0)
-            {
-                Enemy2F.transform.position = new Vector2(ScreenRight, GFore_y);
-                Enemy2F.gameObject.GetComponent<Collider2D>().enabled = true;
-                Enemy2FOREOnScreen = 1;
-                EnemyFOREOnScreen += 1;
-                timeSinceEnemy2FLastSpawned = 0f;
-                OnScreen += 1;
-            }
-            else if(rand ==2 && objFOREOnScreen==0 && numobjSpawns>0)
-            {
-                obj1F.transform.position = new Vector2(ScreenRight, GFore_y);
-                obj1F.gameObject.GetComponent<Collider2D>().enabled = true;
-                objFOREOnScreen = 1;
-                EnemyFOREOnScreen += 1;
-                timeSinceObjFEnemyLastSpawned = 0f;
-                OnScreen += 1;
-            }
-        }
-        /*bear.transform.position = new Vector2(maxX, minY);
-        sealion.transform.position = new Vector2(maxX, minY);
-        if (Random.Range(1, 10) % 2 == 0)
-        {
-            bearEnemyOnScreen = 1;
-        }
-        else
-        {
-            sealionEnemyOnScreen = 1;
-        }*/
-        //currentSpeed = speed;
     }
 
-    /*void OnCollisionEnter2D(Collision2D coll)
+    void OnCollisionEnter2D(Collision2D coll)
     {
         if (coll.gameObject.CompareTag("Player") && coll.gameObject.GetComponent<PlayerControler>().attacking == 1)
         {
-            //Attacked! Add to score, spawn it back to out of screen(THIS IS IN PLAYERCONTROLER)
-            if (this.gameObject.CompareTag("E1"))
-            {
-                score += Score4Enemy1 * 10;
-            }
-            else if (this.gameObject.CompareTag("E2"))
-            {
-                score += Score4Enemy2 * 10;
-            }
-            else if (this.gameObject.CompareTag("Boss"))
-            {
-                score += Score4EnemyBoss * 10;
-            }
+            
         }
-    }*/
-
-    /*void SpawnBirdEnemy()
-    {
-        birdYPosition = Random.Range(minY + 0.5f, maxY);
-        bird.transform.position = new Vector2(maxX, birdYPosition);
-        birdEnemyOnScreen = 1;
-        timeSinceBirdEnemyLastSpawned = 0;
-    }*/
+    }
 }
