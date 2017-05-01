@@ -26,8 +26,8 @@ public class SpawnerController : MonoBehaviour
     private GameObject obj1B;
     private GameObject obj1M;
     private GameObject obj1F;
-    private int playerAtL = 0;
-    private int playerWas = -1;
+    public int playerAtL = 0;
+    public int playerWas = -1;
     //private GameObject Player ???
 
     public int numEmemy1Spawns = 4;
@@ -152,7 +152,7 @@ public class SpawnerController : MonoBehaviour
         playerAtL = PlayerOBJECT.GetComponent<PlayerControler>().GController;
         if (playerWas == -1)
         {
-            playerWas = PlayerOBJECT.GetComponent<PlayerControler>().GController;
+            playerWas = 0;
             ColliderDespawn();
         }
         else if (playerAtL != playerWas)
