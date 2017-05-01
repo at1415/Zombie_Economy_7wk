@@ -87,6 +87,7 @@
     <Compile Include="Assets\Scripts\BController.cs" />
     <Compile Include="Assets\Scripts\BGController.cs" />
     <Compile Include="Assets\Scripts\BackgroundReposition.cs" />
+    <Compile Include="Assets\Scripts\EnemyObjectCollDetect.cs" />
     <Compile Include="Assets\Scripts\PLAY.cs" />
     <Compile Include="Assets\Scripts\PlayerControler.cs" />
     <Compile Include="Assets\Scripts\Quit.cs" />
